@@ -10,7 +10,7 @@ import smtplib, ssl
 import configparser
 
 class Mail(Reminder):
-	def send():
+	def send(message=None):
 	    config = configparser.ConfigParser()
 
 	    with open('mail.cfg') as f:
@@ -36,3 +36,29 @@ class Mail(Reminder):
 	        server.sendmail(sender_email, receiver_email, message)
 
 	    print('Mail sent.')
+
+import slack
+
+class Slack(Reminder):
+	def send(message=None, channel=None):
+
+		with open('slack_token.txt') as f:  
+		    slack_token = f.read()
+		client = slack.WebClient(token=slack_token)
+
+		text = "Hello from your app! :tada:"
+		if message != None:
+			text = message
+
+		if channel == None:
+			channel="CT04WDZC4"
+
+
+		client.chat_postMessage(
+		  channel=channel,
+		  text=text
+		)
+
+
+if __name__ == '__main__':
+    Slack.send()
