@@ -4,14 +4,14 @@ import os
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
-import mail
+from reminder import Mail
 
 def test_run():
     scheduler = BackgroundScheduler()
 
-    x = datetime(2020, 1, 23, 10, 0)
+    x = datetime(2020, 1, 23, 11, 24)
 
-    scheduler.add_job(mail.send_mail, next_run_time=x)
+    scheduler.add_job(Mail.send, next_run_time=x)
     scheduler.start()
     print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
 
