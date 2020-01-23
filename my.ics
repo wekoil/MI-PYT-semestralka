@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+DESCRIPTION:{"type": "reminder"\, "how": "mail"\, "message": "nazdar bejku"}
+DTSTART:20140101T000000Z
+SUMMARY:My cool event
+UID:8b0b054b-95b5-4abf-b9d2-7fe199e3a5a4@8b0b.org
+END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:{"type": "reminder"\, "how": "mail"\, "message": "nazdar bejku"}
+DTSTART:20200123T185600Z
+SUMMARY:My cool event
+UID:8b0bs054b-95b5-4abf-b9d2-7fe199e3a5a4@8b0b.org
+END:VEVENT
+PRODID:ics.py - http://git.io/lLljaA
+VERSION:2.0
+END:VCALENDAR
