@@ -3,10 +3,10 @@ import configparser
 
 def send_mail():
 
-    port = 587
-    smtp_server = "smtp.gmail.com"
-    sender_email = "mjan72771@gmail.com"
-    receiver_email = "mjan72771@gmail.com"
+    # port = 587
+    # smtp_server = "smtp.gmail.com"
+    # sender_email = "mjan72771@gmail.com"
+    # receiver_email = "mjan72771@gmail.com"
 
     config = configparser.ConfigParser()
 
