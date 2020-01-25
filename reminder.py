@@ -8,9 +8,11 @@ class Reminder:
 
 import smtplib, ssl
 import configparser
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 class Mail(Reminder):
-	def send(message=None):
+	def send(subject=None, message=None):
 	    config = configparser.ConfigParser()
 
 	    with open('mail.cfg') as f:
@@ -24,12 +26,17 @@ class Mail(Reminder):
 	    with open('gmail_password.txt') as f:  
 	        password = f.read()
 
-	    text = """Subject: Hi there
-
-	    This message is sent from Python."""
+	    text = """This message is sent from Python."""
 
 	    if message != None:
 		    text = message
+
+	    mail_message = MIMEMultipart("alternative")
+	    mail_message["Subject"] = subject
+	    mail_message["From"] = sender_email
+	    mail_message["To"] = receiver_email
+	    part = MIMEText(text, "plain")
+	    mail_message.attach(part)
 
 	    context = ssl.create_default_context()
 	    with smtplib.SMTP(smtp_server, port) as server:
@@ -37,11 +44,11 @@ class Mail(Reminder):
 	        server.starttls(context=context)
 	        server.ehlo()  # Can be omitted
 	        server.login(sender_email, password)
-	        server.sendmail(sender_email, receiver_email, text)
+	        server.sendmail(sender_email, receiver_email, mail_message.as_string())
 
 	    print('Mail sent.')
 
-import slack
+# import slack
 
 class Slack(Reminder):
 	def send(message=None, channel=None):
@@ -65,4 +72,4 @@ class Slack(Reminder):
 
 
 if __name__ == '__main__':
-    Slack.send()
+    Mail.send(subject='test', message='nevim')
