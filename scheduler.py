@@ -10,29 +10,53 @@ from ics import Calendar, Event
 
 import json
 
-def process_event(event, scheduler):
-    event_description = json.loads(event.description)
+class Scheduler():
+    def __init__(self):
+        self.is_running = False
+        self.scheduler = BackgroundScheduler()
 
-    message = 'This is default message.'
+    def process_event(self, event):
+        event_description = json.loads(event.description)
 
-    if 'message' in event_description:
-        message = event_description['message']
+        message = 'This is default message.'
 
-    if event_description['how'] == 'mail':
-        scheduler.add_job(Mail.send, next_run_time=event.begin.datetime, kwargs = dict(message=message))
+        if 'message' in event_description:
+            message = event_description['message']
 
-    else:
-        if event_description['how'] == 'slack':
-            scheduler.add_job(Slack.send, next_run_time=event.begin.datetime, kwargs = dict(message=message))
+        if event_description['how'] == 'mail':
+            self.scheduler.add_job(Mail.send, next_run_time=event.begin.datetime, kwargs = dict(message=message))
 
         else:
-            raise NameError('Unknown option. Only mail and slack are supported now.')
+            if event_description['how'] == 'slack':
+                self.scheduler.add_job(Slack.send, next_run_time=event.begin.datetime, kwargs = dict(message=message))
 
-    
+            else:
+                raise NameError('Unknown option. Only mail and slack are supported now.')
+
+    def run(self):
+        if not self.is_running:
+            self.scheduler.start()
+        self.is_running = True
+
+    def stop(self):
+        if self.is_running:
+            self.scheduler.shutdown()
+        self.is_running = False
+
+    def read_calendar(self, file):
+        with open(file) as f:  
+            ics = f.read()
+        return Calendar(ics)
+
+    def load_calendar(self, calendar_file):
+        c = self.read_calendar(calendar_file)
+
+        for event in c.events:
+            self.process_event(event)
 
 
 def test_run():
-    c = load_calendar()
+    c = read_calendar('my.ics')
 
     scheduler = BackgroundScheduler()
 
@@ -52,14 +76,11 @@ def test_run():
         # Not strictly necessary if daemonic mode is enabled but should be done if possible
         scheduler.shutdown()
 
-def load_calendar():
-    with open('my.ics') as f:  
-        ics = f.read()
-    return Calendar(ics)
+    
 
 if __name__ == '__main__':
     test_run()
-    # c = load_calendar()
+    # c = read_calendar()
 
     # for e in c.events:
     #     # d = dict(e.description)

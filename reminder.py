@@ -1,15 +1,17 @@
 from abc import ABCMeta, abstractmethod
 
+import smtplib, ssl
+import configparser
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+import slack
+
 class Reminder:
     __metaclass__ = ABCMeta
 
     @abstractmethod
     def send(self): raise NotImplementedError
-
-import smtplib, ssl
-import configparser
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 
 class Mail(Reminder):
 	def send(subject=None, message=None):
@@ -47,8 +49,6 @@ class Mail(Reminder):
 	        server.sendmail(sender_email, receiver_email, mail_message.as_string())
 
 	    print('Mail sent.')
-
-# import slack
 
 class Slack(Reminder):
 	def send(message=None, channel=None):
