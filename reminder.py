@@ -7,6 +7,8 @@ from email.mime.multipart import MIMEMultipart
 
 import slack
 
+CONFIG_FILE = 'config.cfg'
+
 class Reminder:
     __metaclass__ = ABCMeta
 
@@ -17,7 +19,7 @@ class Mail(Reminder):
 	def send(subject=None, message=None):
 	    config = configparser.ConfigParser()
 
-	    with open('mail.cfg') as f:
+	    with open(CONFIG_FILE) as f:
 	        config.read_file(f)
 
 	    port = config['email']['port']
@@ -57,19 +59,24 @@ class Slack(Reminder):
 		    slack_token = f.read()
 		client = slack.WebClient(token=slack_token)
 
-		text = "Hello from your app! :tada:"
-		if message != None:
-			text = message
+		if message == None:
+			message = "Hello from your app! :tada:"
 
 		if channel == None:
-			channel="CT04WDZC4"
+			config = configparser.ConfigParser()
+			with open(CONFIG_FILE) as f:
+				config.read_file(f)
+			channel = config['slack']['channel']
 
 
 		client.chat_postMessage(
 		  channel=channel,
-		  text=text
+		  text=message
 		)
+
+class Facebook(Reminder):
+	def send(whom=None, message=None):
 
 
 if __name__ == '__main__':
-    Mail.send(subject='test', message='nevim')
+    Slack.send(message='nevim')
