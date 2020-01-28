@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+    <head>
+        <title>List of events</title>
+    </head>
+    <body>
+        {% if events %}
+            <h1>Events:</h1>
+            <ul>
+                {% for event in events %}
+                <li>
+                    {{ user }}    
+                    <ul>
+                        {% set list1 = rules[user].split() %}
+                        {% for rule in list1 %}
+                        <li>{{ rule }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <h1>No events!</h1>
+        {% endif %}
+    </body>
+</html>

@@ -7,15 +7,17 @@ from email.mime.multipart import MIMEMultipart
 
 import slack
 
+from twilio.rest import Client
+
 CONFIG_FILE = 'config.cfg'
 
-class Reminder:
+class Message:
     __metaclass__ = ABCMeta
 
     @abstractmethod
     def send(self): raise NotImplementedError
 
-class Mail(Reminder):
+class Mail(Message):
 	def send(subject=None, message=None):
 	    config = configparser.ConfigParser()
 
@@ -52,7 +54,7 @@ class Mail(Reminder):
 
 	    print('Mail sent.')
 
-class Slack(Reminder):
+class Slack(Message):
 	def send(message=None, channel=None):
 
 		with open('slack_token.txt') as f:  
@@ -74,9 +76,37 @@ class Slack(Reminder):
 		  text=message
 		)
 
-class Facebook(Reminder):
+class WhatsApp(Message):
 	def send(whom=None, message=None):
+		config = configparser.ConfigParser()
+		with open('twilio.cfg') as f:
+			config.read_file(f)
+		sid = config['twilio']['SID']
+		token = config['twilio']['TOKEN']
+
+		# client credentials are read from TWILIO_ACCOUNT_SID and AUTH_TOKEN
+		client = Client(sid, token)
+
+		with open(CONFIG_FILE) as f:
+			config.read_file(f)
+		sender = config['twilio']['sender']
+
+		# this is the Twilio sandbox testing number
+		from_whatsapp_number='whatsapp:{}'.format(sender)
+
+		if whom == None:
+			whom = config['twilio']['receiver']
+
+		# replace this number with your own WhatsApp Messaging number
+		to_whatsapp_number='whatsapp:{}'.format(whom)
+
+		if message == None:
+			message = 'Nazdar'
+
+		client.messages.create(body=message,
+		                       from_=from_whatsapp_number,
+		                       to=to_whatsapp_number)
 
 
 if __name__ == '__main__':
-    Slack.send(message='nevim')
+    WhatsApp.send(message='Nazdar', whom='+420775960345')

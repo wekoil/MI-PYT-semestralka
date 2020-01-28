@@ -4,7 +4,7 @@ import os
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from reminder import Mail, Slack
+from message import Mail, Slack, WhatsApp
 
 from ics import Calendar, Event
 
@@ -14,6 +14,7 @@ class Scheduler():
     def __init__(self):
         self.is_running = False
         self.scheduler = BackgroundScheduler()
+        self.supported = ['mail', 'slack', 'whatsapp']
 
     def process_event(self, event):
         event_description = json.loads(event.description)
@@ -23,15 +24,27 @@ class Scheduler():
         if 'message' in event_description:
             message = event_description['message']
 
+        if not event_description['how'] in self.supported:
+            raise NameError('Unknown option. Only mail and slack are supported now.')
+
         if event_description['how'] == 'mail':
             self.scheduler.add_job(Mail.send, next_run_time=event.begin.datetime, kwargs = dict(message=message))
 
-        else:
-            if event_description['how'] == 'slack':
-                self.scheduler.add_job(Slack.send, next_run_time=event.begin.datetime, kwargs = dict(message=message))
+        
+        if event_description['how'] == 'slack':
+            self.scheduler.add_job(Slack.send, next_run_time=event.begin.datetime, kwargs = dict(message=message))
 
-            else:
-                raise NameError('Unknown option. Only mail and slack are supported now.')
+        if event_description['how'] == 'whatsapp':
+            self.scheduler.add_job(WhatsApp.send, next_run_time=event.begin.datetime, kwargs = dict(message=message))
+
+    def get_events(self):
+        events = ''
+        for event in self.scheduler.get_jobs():
+            events += event.__str__()
+            events += '\n'
+        print(events)
+        return events
+
 
     def run(self):
         if not self.is_running:
