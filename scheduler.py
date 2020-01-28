@@ -20,22 +20,24 @@ class Scheduler():
         event_description = json.loads(event.description)
 
         message = 'This is default message.'
-
         if 'message' in event_description:
             message = event_description['message']
 
+        receiver = None
+        if 'receiver' in event_description:
+            receiver = event_description['receiver']
+
         if not event_description['how'] in self.supported:
-            raise NameError('Unknown option. Only mail and slack are supported now.')
+            raise NameError('Unknown option. Only mail, slack and whatsapp are supported now.')
 
         if event_description['how'] == 'mail':
-            self.scheduler.add_job(Mail.send, next_run_time=event.begin.datetime, kwargs = dict(message=message))
+            self.scheduler.add_job(Mail.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver))
 
-        
         if event_description['how'] == 'slack':
-            self.scheduler.add_job(Slack.send, next_run_time=event.begin.datetime, kwargs = dict(message=message))
+            self.scheduler.add_job(Slack.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, channel=receiver))
 
         if event_description['how'] == 'whatsapp':
-            self.scheduler.add_job(WhatsApp.send, next_run_time=event.begin.datetime, kwargs = dict(message=message))
+            self.scheduler.add_job(WhatsApp.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver))
 
     def get_events(self):
         events = []

@@ -18,7 +18,7 @@ class Message:
     def send(self): raise NotImplementedError
 
 class Mail(Message):
-	def send(subject=None, message=None):
+	def send(subject=None, message=None, receiver=None):
 	    config = configparser.ConfigParser()
 
 	    with open(CONFIG_FILE) as f:
@@ -32,16 +32,14 @@ class Mail(Message):
 	    with open('gmail_password.txt') as f:  
 	        password = f.read()
 
-	    text = """This message is sent from Python."""
-
-	    if message != None:
-		    text = message
+	    if message == None:
+		    message = 'Default mail body.'
 
 	    mail_message = MIMEMultipart("alternative")
 	    mail_message["Subject"] = subject
 	    mail_message["From"] = sender_email
 	    mail_message["To"] = receiver_email
-	    part = MIMEText(text, "plain")
+	    part = MIMEText(message, "plain")
 	    mail_message.attach(part)
 
 	    context = ssl.create_default_context()
@@ -52,7 +50,7 @@ class Mail(Message):
 	        server.login(sender_email, password)
 	        server.sendmail(sender_email, receiver_email, mail_message.as_string())
 
-	    print('Mail sent.')
+	    # print('Mail sent.')
 
 class Slack(Message):
 	def send(message=None, channel=None):
@@ -77,7 +75,7 @@ class Slack(Message):
 		)
 
 class WhatsApp(Message):
-	def send(whom=None, message=None):
+	def send(receiver=None, message=None):
 		config = configparser.ConfigParser()
 		with open('twilio.cfg') as f:
 			config.read_file(f)
@@ -94,11 +92,11 @@ class WhatsApp(Message):
 		# this is the Twilio sandbox testing number
 		from_whatsapp_number='whatsapp:{}'.format(sender)
 
-		if whom == None:
-			whom = config['twilio']['receiver']
+		if receiver == None:
+			receiver = config['twilio']['receiver']
 
 		# replace this number with your own WhatsApp Messaging number
-		to_whatsapp_number='whatsapp:{}'.format(whom)
+		to_whatsapp_number='whatsapp:{}'.format(receiver)
 
 		if message == None:
 			message = 'Nazdar'
@@ -109,4 +107,4 @@ class WhatsApp(Message):
 
 
 if __name__ == '__main__':
-    WhatsApp.send(message='Nazdar', whom='+420775960345')
+    WhatsApp.send(message='Nazdar', receiver='+420775960345')
