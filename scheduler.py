@@ -72,6 +72,42 @@ class Scheduler():
         for event in c.events:
             self.process_event(event)
 
+    @staticmethod
+    def create_description(how='mail', receiver=None, message=None, subject=None):
+        d = '{'
+        d += '"how": "'
+        d += how
+        d += '"'
+
+        if receiver != None:
+            d += ', "receiver": "'
+            d += receiver
+            d += '"'
+
+        if message != None:
+            d += ', "message": "'
+            d += message
+            d += '"'
+
+        if subject != None:
+            d += ', "subject": "'
+            d += subject
+            d += '"'
+
+        d += '}'
+        print(d)
+        return d
+
+    @staticmethod
+    def create_event(name, when, how='mail', receiver=None, message=None, subject=None):
+        e = Event()
+        e.name = name
+        e.begin = when
+        e.description = Scheduler.create_description(how, receiver, message, subject)
+
+        return e
+
+
 
 def test_run():
     c = read_calendar('my.ics')
