@@ -27,11 +27,15 @@ class Scheduler():
         if 'receiver' in event_description:
             receiver = event_description['receiver']
 
+        subject = None
+        if 'subject' in event_description:
+            subject = event_description['subject']
+
         if not event_description['how'] in self.supported:
             raise NameError('Unknown option. Only mail, slack and whatsapp are supported now.')
 
         if event_description['how'] == 'mail':
-            self.scheduler.add_job(Mail.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver))
+            self.scheduler.add_job(Mail.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver, subject=subject))
 
         if event_description['how'] == 'slack':
             self.scheduler.add_job(Slack.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, channel=receiver))
