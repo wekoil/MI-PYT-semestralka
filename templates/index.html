@@ -9,13 +9,7 @@
             <ul>
                 {% for event in events %}
                 <li>
-                    {{ user }}    
-                    <ul>
-                        {% set list1 = rules[user].split() %}
-                        {% for rule in list1 %}
-                        <li>{{ rule }}</li>
-                        {% endfor %}
-                    </ul>
+                    {{ event }}
                 </li>
                 {% endfor %}
             </ul>

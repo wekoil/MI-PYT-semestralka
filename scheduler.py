@@ -38,11 +38,10 @@ class Scheduler():
             self.scheduler.add_job(WhatsApp.send, next_run_time=event.begin.datetime, kwargs = dict(message=message))
 
     def get_events(self):
-        events = ''
+        events = []
         for event in self.scheduler.get_jobs():
-            events += event.__str__()
-            events += '\n'
-        print(events)
+            events.append(event.__str__())
+        # print(events)
         return events
 
 

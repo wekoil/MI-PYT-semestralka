@@ -1,4 +1,6 @@
-from flask import Flask
+from flask import Flask, render_template
+
+import flask
 
 from scheduler import Scheduler
 
@@ -15,9 +17,12 @@ sch = run_scheduler()
 
 # @app.route('/add', methods=['POST'])
 
-@app.route('/list')
+blueprint = flask.Blueprint('my', __name__)
+
+@blueprint.route('/list')
 def list():
-	return sch.get_events()
+	events = sch.get_events()
+	return render_template('index.html', events=events)
 
 
 @app.route('/')
@@ -25,4 +30,5 @@ def index():
     return 'Running!'
 
 if __name__ == '__main__':
-    app.run(debug=True,use_reloader=False)
+	app.register_blueprint(blueprint)
+	app.run(debug=True,use_reloader=False)
