@@ -4,6 +4,8 @@ import flask
 
 from scheduler import Scheduler
 
+import hmac
+
 app = Flask(__name__)
 
 def run_scheduler():
@@ -21,6 +23,31 @@ sch = run_scheduler()
 
 blueprint = flask.Blueprint('my', __name__)
 
+def verify_signature(req):
+    secret = '1234'
+
+    if secret == None:
+        return True
+
+    header_signature = req.headers.get('Signature')
+    
+    print(header_signature)
+
+    if header_signature == None:
+        return False
+
+    sha_name, signature = header_signature.split('=')
+    if sha_name != 'sha1':
+        return False
+
+    print(req.data)
+
+    mac = hmac.new(bytes(secret, encoding='ascii'), msg=req.data, digestmod='sha1').hexdigest()
+    print(mac)
+    if not str(mac) == str(signature):
+        return False
+    return True
+
 @blueprint.route('/list')
 def list():
     events = sch.get_events()
@@ -35,8 +62,12 @@ def add_event():
     for atr in ['name', 'when', 'how']:
     	if atr not in request.get_json():
     		abort(400)
-    		
-    return '', 200
+    
+    if verify_signature(request):
+
+        return '', 200
+    
+    return '', 400
     
 
 @app.route('/')
