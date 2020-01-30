@@ -19,6 +19,8 @@ class Message:
 
 class Mail(Message):
     def send(subject=None, message=None, receiver=None):
+        """Sends mail to specified address.
+        If no reciever is specified it will use default loaded from configuration file."""
         config = configparser.ConfigParser()
         with open(CONFIG_FILE) as f:
             config.read_file(f)
@@ -51,7 +53,7 @@ class Mail(Message):
 
 class Slack(Message):
     def send(message=None, channel=None):
-
+        """Sends message to slack channel."""
         with open('slack_token.txt') as f:  
             slack_token = f.read()
         client = slack.WebClient(token=slack_token)
@@ -73,26 +75,24 @@ class Slack(Message):
 
 class WhatsApp(Message):
     def send(receiver=None, message=None):
+        """Sends whatsapp message via twilio"""
         config = configparser.ConfigParser()
         with open('twilio.cfg') as f:
             config.read_file(f)
         sid = config['twilio']['SID']
         token = config['twilio']['TOKEN']
 
-        # client credentials are read from TWILIO_ACCOUNT_SID and AUTH_TOKEN
         client = Client(sid, token)
 
         with open(CONFIG_FILE) as f:
             config.read_file(f)
         sender = config['twilio']['sender']
 
-        # this is the Twilio sandbox testing number
         from_whatsapp_number='whatsapp:{}'.format(sender)
 
         if receiver == None:
             receiver = config['twilio']['receiver']
 
-        # replace this number with your own WhatsApp Messaging number
         to_whatsapp_number='whatsapp:{}'.format(receiver)
 
         if message == None:
@@ -102,6 +102,3 @@ class WhatsApp(Message):
                                from_=from_whatsapp_number,
                                to=to_whatsapp_number)
 
-
-if __name__ == '__main__':
-    WhatsApp.send(message='Nazdar', receiver='+420775960345')

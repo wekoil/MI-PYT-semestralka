@@ -11,6 +11,7 @@ from ics import Calendar, Event
 import json
 
 class Scheduler():
+    """ This class handles event adding, removing and listing """
     def __init__(self):
         self.is_running = False
         self.scheduler = BackgroundScheduler()
@@ -18,6 +19,7 @@ class Scheduler():
         self.counter = 0
 
     def process_event(self, event):
+        """ Used adding jobs to scheduler. """
         event_description = json.loads(event.description)
 
         message = 'This is default message.'
@@ -36,40 +38,56 @@ class Scheduler():
             raise NameError('Unknown option. Only mail, slack and whatsapp are supported now.')
 
         if event_description['how'] == 'mail':
-            self.scheduler.add_job(Mail.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver, subject=subject), id=str(self.counter))
+            self.scheduler.add_job(Mail.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver, subject=subject), id=str(self.counter), name=event.name)
 
         if event_description['how'] == 'slack':
-            self.scheduler.add_job(Slack.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, channel=receiver), id=str(self.counter))
+            self.scheduler.add_job(Slack.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, channel=receiver), id=str(self.counter), name=event.name)
 
         if event_description['how'] == 'whatsapp':
-            self.scheduler.add_job(WhatsApp.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver), id=str(self.counter))
+            self.scheduler.add_job(WhatsApp.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver), id=str(self.counter), name=event.name)
 
         self.counter += 1
 
     def get_events(self):
+        """
+        Method returns list of scheduled events.
+        """
         events = []
         for event in self.scheduler.get_jobs():
-            events.append(str('ID: ' + event.id + ' ' + event.__str__()))
+            function_name = str(event.func)
+            events.append(str('ID: ' + event.id + ', Name: ' + event.__str__() + ' ' + function_name + ' ' + str(event.kwargs)))
         # print(events)
         return events
 
 
     def run(self):
+        """
+        Starts scheduler.
+        """
         if not self.is_running:
             self.scheduler.start()
         self.is_running = True
 
     def stop(self):
+        """
+        Stops scheduler.
+        """
         if self.is_running:
             self.scheduler.shutdown()
         self.is_running = False
 
     def read_calendar(self, file):
+        """
+        Method will read specified calendar from file in ics format.
+        """
         with open(file) as f:  
             ics = f.read()
         return Calendar(ics)
 
     def load_calendar(self, calendar_file):
+        """
+        Method will add events from calendar to scheduler.
+        """
         c = self.read_calendar(calendar_file)
 
         for event in c.events:
@@ -77,6 +95,9 @@ class Scheduler():
 
     @staticmethod
     def create_description(how='mail', receiver=None, message=None, subject=None):
+        """
+        Method will create description to match for adding job.
+        """
         d = '{'
         d += '"how": "'
         d += how
@@ -103,6 +124,9 @@ class Scheduler():
 
     @staticmethod
     def create_event(name, when, how='mail', receiver=None, message=None, subject=None):
+        """
+        Method will create event from specified parameters which can be later added to scheduler.
+        """
         e = Event()
         e.name = name
         e.begin = when
@@ -111,44 +135,7 @@ class Scheduler():
         return e
 
     def remove_event(self, event_id):
+        """
+        Remove event from scheduler specified by his id.
+        """
         self.scheduler.remove_job(str(event_id))
-
-
-
-def test_run():
-    c = read_calendar('my.ics')
-
-    scheduler = BackgroundScheduler()
-
-    # x = datetime(2020, 1, 23, 12, 10)
-
-    for e in c.events:
-        process_event(e, scheduler)
-
-    scheduler.start()
-    print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
-
-    try:
-        # This is here to simulate application activity (which keeps the main thread alive).
-        while True:
-            time.sleep(2)
-    except (KeyboardInterrupt, SystemExit):
-        # Not strictly necessary if daemonic mode is enabled but should be done if possible
-        scheduler.shutdown()
-
-    
-
-if __name__ == '__main__':
-    test_run()
-    # c = read_calendar()
-
-    # for e in c.events:
-    #     # d = dict(e.description)
-    #     # print(d['how'])
-    #     # print(e.description)
-    #     d = json.loads(e.description)
-    #     print(e.begin.datetime)
-    #     print(type(e.begin.datetime))
-
-    #     if 'how' in d:
-    #         print(d['how'])
