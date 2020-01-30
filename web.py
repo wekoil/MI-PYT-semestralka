@@ -60,14 +60,32 @@ def add_event():
     # print(request.headers)
     # print(request.get_json())
     for atr in ['name', 'when', 'how']:
-    	if atr not in request.get_json():
-    		abort(400)
+        if atr not in request.get_json():
+            abort(400)
     
-    if verify_signature(request):
+    if not verify_signature(request):
+        abort(400)
 
-        return '', 200
+    json = request.get_json()
+    event = Scheduler.create_event(name=json.get('name'), when=json.get('when'), how=json.get('how'),  receiver=json.get('receiver'), message=json.get('message'), subject=json.get('subject'))
+    sch.process_event(event)
+
+    return '', 200
+
+@app.route('/remove', methods=['POST'])
+def remove_event():
+    # print(request.headers)
+    # print(request.get_json())
+    if 'id' not in request.get_json():
+        abort(400)
     
-    return '', 400
+    if not verify_signature(request):
+        abort(400)
+
+    json = request.get_json()
+    sch.remove_event(event_id=json.get('id'))
+
+    return '', 200
     
 
 @app.route('/')

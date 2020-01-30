@@ -15,6 +15,7 @@ class Scheduler():
         self.is_running = False
         self.scheduler = BackgroundScheduler()
         self.supported = ['mail', 'slack', 'whatsapp']
+        self.counter = 0
 
     def process_event(self, event):
         event_description = json.loads(event.description)
@@ -35,18 +36,20 @@ class Scheduler():
             raise NameError('Unknown option. Only mail, slack and whatsapp are supported now.')
 
         if event_description['how'] == 'mail':
-            self.scheduler.add_job(Mail.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver, subject=subject))
+            self.scheduler.add_job(Mail.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver, subject=subject), id=str(self.counter))
 
         if event_description['how'] == 'slack':
-            self.scheduler.add_job(Slack.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, channel=receiver))
+            self.scheduler.add_job(Slack.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, channel=receiver), id=str(self.counter))
 
         if event_description['how'] == 'whatsapp':
-            self.scheduler.add_job(WhatsApp.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver))
+            self.scheduler.add_job(WhatsApp.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver), id=str(self.counter))
+
+        self.counter += 1
 
     def get_events(self):
         events = []
         for event in self.scheduler.get_jobs():
-            events.append(event.__str__())
+            events.append(str('ID: ' + event.id + ' ' + event.__str__()))
         # print(events)
         return events
 
@@ -106,6 +109,9 @@ class Scheduler():
         e.description = Scheduler.create_description(how, receiver, message, subject)
 
         return e
+
+    def remove_event(self, event_id):
+        self.scheduler.remove_job(str(event_id))
 
 
 
