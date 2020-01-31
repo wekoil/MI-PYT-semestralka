@@ -10,6 +10,7 @@ import slack
 from twilio.rest import Client
 
 CONFIG_FILE = 'config.cfg'
+CREDENTIALS_FILE = 'credentials.cfg'
 
 class Message:
     __metaclass__ = ABCMeta
@@ -21,6 +22,7 @@ class Mail(Message):
     def send(subject=None, message=None, receiver=None):
         """Sends mail to specified address.
         If no reciever is specified it will use default loaded from configuration file."""
+
         config = configparser.ConfigParser()
         with open(CONFIG_FILE) as f:
             config.read_file(f)
@@ -30,8 +32,11 @@ class Mail(Message):
         sender_email = config['email']['sender']
         receiver_email = config['email']['receiver']
 
-        with open('gmail_password.txt') as f:  
-            password = f.read()
+        secret = configparser.ConfigParser()
+        with open(CREDENTIALS_FILE) as f:
+            secret.read_file(f)
+
+        password = secret['email']['password']
 
         if message == None:
             message = 'Default mail body.'
@@ -54,8 +59,13 @@ class Mail(Message):
 class Slack(Message):
     def send(message=None, channel=None):
         """Sends message to slack channel."""
-        with open('slack_token.txt') as f:  
-            slack_token = f.read()
+
+        secret = configparser.ConfigParser()
+        with open(CREDENTIALS_FILE) as f:
+            secret.read_file(f)
+
+        slack_token = secret['slack']['token']
+
         client = slack.WebClient(token=slack_token)
 
         if message == None:
@@ -76,8 +86,9 @@ class Slack(Message):
 class WhatsApp(Message):
     def send(receiver=None, message=None):
         """Sends whatsapp message via twilio"""
+        
         config = configparser.ConfigParser()
-        with open('twilio.cfg') as f:
+        with open(CREDENTIALS_FILE) as f:
             config.read_file(f)
         sid = config['twilio']['SID']
         token = config['twilio']['TOKEN']

@@ -37,16 +37,20 @@ class Scheduler():
         if not event_description['how'] in self.supported:
             raise NameError('Unknown option. Only mail, slack and whatsapp are supported now.')
 
+        id = str(self.counter)
+
         if event_description['how'] == 'mail':
-            self.scheduler.add_job(Mail.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver, subject=subject), id=str(self.counter), name=event.name)
+            self.scheduler.add_job(Mail.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver, subject=subject), id=id, name=event.name)
 
         if event_description['how'] == 'slack':
-            self.scheduler.add_job(Slack.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, channel=receiver), id=str(self.counter), name=event.name)
+            self.scheduler.add_job(Slack.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, channel=receiver), id=id, name=event.name)
 
         if event_description['how'] == 'whatsapp':
-            self.scheduler.add_job(WhatsApp.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver), id=str(self.counter), name=event.name)
+            self.scheduler.add_job(WhatsApp.send, next_run_time=event.begin.datetime, kwargs = dict(message=message, receiver=receiver), id=id, name=event.name)
 
         self.counter += 1
+
+        return id
 
     def get_events(self):
         """

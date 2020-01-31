@@ -1,8 +1,16 @@
 import requests
 import hmac
 import json
+import configparser
 
-secret = '1234'
+CREDENTIALS_FILE = 'credentials.cfg'
+
+config = configparser.ConfigParser()
+with open(CREDENTIALS_FILE) as f:
+    config.read_file(f)
+
+secret = config['web']['secret']
+
 JSON = '{"id": "4"}'
 
 mac = hmac.new(bytes(secret, encoding='ascii'), msg=bytes(JSON, encoding='ascii'), digestmod='sha1').hexdigest()

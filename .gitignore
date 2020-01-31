@@ -2,3 +2,4 @@ gmail_password.txt
 slack_token.txt
 twilio.cfg
 __pycache__/
+credentials.cfg

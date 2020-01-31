@@ -1,17 +1,19 @@
-from flask import Flask, render_template, request
-
+from flask import Flask, render_template, request, abort
 import flask
-
 from scheduler import Scheduler
-
 import hmac
+import configparser
+import os
+
+CREDENTIALS_FILE = 'credentials.cfg'
 
 app = Flask(__name__)
 
-def run_scheduler():
+def run_scheduler(calendar=None):
     """Loads calendar and stars scheduler"""
     sch = Scheduler()
-    sch.load_calendar('my.ics')
+    if calendar != None:
+    	sch.load_calendar(calendar)
 
     sch.run()
     return sch
@@ -23,7 +25,15 @@ blueprint = flask.Blueprint('my', __name__)
 
 def verify_signature(req):
     """Verify signature of request"""
-    secret = '1234'
+    config = configparser.ConfigParser()
+    try:
+        CREDENTIALS_FILE = os.environ['CREDENTIALS_FILE']
+    except:
+        CREDENTIALS_FILE = 'credentials.cfg'
+    with open(CREDENTIALS_FILE) as f:
+        config.read_file(f)
+
+    secret = config['web']['secret']
 
     if secret == None:
         return True
