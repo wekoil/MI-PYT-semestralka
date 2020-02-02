@@ -113,3 +113,5 @@ class WhatsApp(Message):
                                from_=from_whatsapp_number,
                                to=to_whatsapp_number)
 
+if __name__ == '__main__':
+    

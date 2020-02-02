@@ -9,11 +9,13 @@ CREDENTIALS_FILE = 'credentials.cfg'
 
 app = Flask(__name__)
 
-def run_scheduler(calendar=None):
+def run_scheduler():
     """Loads calendar and stars scheduler"""
     sch = Scheduler()
-    if calendar != None:
-    	sch.load_calendar(calendar)
+    try:
+        sch.load_calendar(os.environ['CALENDAR'])
+    except:
+        pass
 
     sch.run()
     return sch
