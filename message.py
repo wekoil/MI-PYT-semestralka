@@ -9,14 +9,21 @@ import slack
 
 from twilio.rest import Client
 
-CONFIG_FILE = 'config.cfg'
-CREDENTIALS_FILE = 'credentials.cfg'
+import click
 
 class Message:
     __metaclass__ = ABCMeta
     
     @abstractmethod
     def send(self): raise NotImplementedError
+
+    @staticmethod
+    def set_config_files(credentials, config):
+        global CONFIG_FILE
+        global CREDENTIALS_FILE
+
+        CONFIG_FILE = config
+        CREDENTIALS_FILE = credentials
 
 class Mail(Message):
     def send(subject=None, message=None, receiver=None):
@@ -69,7 +76,7 @@ class Slack(Message):
         client = slack.WebClient(token=slack_token)
 
         if message == None:
-            message = "Hello from your app! :tada:"
+            message = "Hello from python! :tada:"
 
         if channel == None:
             config = configparser.ConfigParser()
@@ -107,11 +114,11 @@ class WhatsApp(Message):
         to_whatsapp_number='whatsapp:{}'.format(receiver)
 
         if message == None:
-            message = 'Nazdar'
+            message = 'Hello from twilio'
 
         client.messages.create(body=message,
                                from_=from_whatsapp_number,
                                to=to_whatsapp_number)
 
 if __name__ == '__main__':
-    
+    set_config_files()

@@ -3,3 +3,4 @@ slack_token.txt
 twilio.cfg
 __pycache__/
 credentials.cfg
+tests/credentials_wrong.cfg
