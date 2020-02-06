@@ -89,7 +89,7 @@ def test_whatsapp_wrong_token(capsys):
     Message.set_config_files('tests/credentials_wrong.cfg', 'config.cfg')
     with pytest.raises(Exception) as excinfo:
         WhatsApp.send()
-    assert 'HTTP 401 error: Unable to create record: Authenticate in str(excinfo.value)'
+    assert 'HTTP 401 error: Unable to create record: Authenticate' in str(excinfo.value)
     cp = capsys.readouterr()
     assert not cp.out
     assert not cp.err

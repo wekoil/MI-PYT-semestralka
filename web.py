@@ -7,7 +7,7 @@ import os
 
 CREDENTIALS_FILE = 'credentials.cfg'
 
-app = Flask(__name__)
+
 
 def run_scheduler():
     """Loads calendar and stars scheduler"""
@@ -20,10 +20,6 @@ def run_scheduler():
     sch.run()
     return sch
 
-sch = run_scheduler()
-
-
-blueprint = flask.Blueprint('my', __name__)
 
 def verify_signature(req):
     """Verify signature of request"""
@@ -42,7 +38,7 @@ def verify_signature(req):
 
     header_signature = req.headers.get('Signature')
     
-    print(header_signature)
+    # print(header_signature)
 
     if header_signature == None:
         return False
@@ -51,23 +47,26 @@ def verify_signature(req):
     if sha_name != 'sha1':
         return False
 
-    print(req.data)
+    # print(req.data)
 
     mac = hmac.new(bytes(secret, encoding='ascii'), msg=req.data, digestmod='sha1').hexdigest()
-    print(mac)
+    # print(mac)
     if not str(mac) == str(signature):
         return False
     return True
 
+app = flask.Flask(__name__)
+blueprint = flask.Blueprint('web', __name__)
+sch = run_scheduler()
+
 @blueprint.route('/list')
 def list():
     """Lists all events."""
-
     events = sch.get_events()
     return render_template('index.html', events=events)
 
 
-@app.route('/add', methods=['POST'])
+@blueprint.route('/add', methods=['POST'])
 def add_event():
     """Adds event to scheduler."""
     for atr in ['name', 'when', 'how']:
@@ -83,7 +82,7 @@ def add_event():
 
     return '', 200
 
-@app.route('/remove', methods=['POST'])
+@blueprint.route('/remove', methods=['POST'])
 def remove_event():
     """Removes event from scheduler with specified id."""
     if 'id' not in request.get_json():
@@ -96,6 +95,14 @@ def remove_event():
     sch.remove_event(event_id=json.get('id'))
 
     return '', 200
+
+
+def create_app(*args, **kwargs):
+    app = flask.Flask(__name__)
+    app.register_blueprint(blueprint)
+    global sch
+    sch = run_scheduler()
+    return app
 
 
 if __name__ == '__main__':
