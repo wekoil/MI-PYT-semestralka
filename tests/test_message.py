@@ -12,7 +12,7 @@ def test_mail_wrong_smtp(capsys):
     Message.set_config_files('credentials.cfg', 'tests/config_wrong_smtp.cfg')
     with pytest.raises(Exception) as excinfo:
         Mail.send()
-    assert 'service not known' in str(excinfo.value)
+    assert 'service not known' in str(excinfo.value) or '[Errno 11001] getaddrinfo failed' in str(excinfo.value)
     cp = capsys.readouterr()
     assert not cp.out
     assert not cp.err
