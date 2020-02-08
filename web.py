@@ -97,13 +97,14 @@ def add_event():
 def remove_event():
     """Removes event from scheduler with specified id."""
     if 'id' not in request.get_json():
-        abort(400)
+        return 'Id not specified', 400
     
     if not verify_signature(request):
-        abort(400)
+        return 'Wrong signature', 400
 
     json = request.get_json()
-    sch.remove_event(event_id=json.get('id'))
+    if not sch.remove_event(event_id=json.get('id')):
+        return 'Id not found', 400
 
     return '', 200
 

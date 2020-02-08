@@ -142,4 +142,9 @@ class Scheduler():
         """
         Remove event from scheduler specified by his id.
         """
-        self.scheduler.remove_job(str(event_id))
+        try:
+            self.scheduler.remove_job(str(event_id))
+            return True
+        
+        except:
+            return False
