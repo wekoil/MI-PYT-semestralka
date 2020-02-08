@@ -65,6 +65,17 @@ def list():
     events = sch.get_events()
     return render_template('index.html', events=events)
 
+@blueprint.route('/load', methods=['POST'])
+def load_calendar():
+    """Load events from calender into scheduler."""
+
+    if not verify_signature(request):
+        abort(400)
+    print('signature ok')
+    json = request.get_json()
+    sch.load_calendar(json.get('file_name'))
+
+    return '', 200
 
 @blueprint.route('/add', methods=['POST'])
 def add_event():
