@@ -59,7 +59,12 @@ class Scheduler():
         events = []
         for event in self.scheduler.get_jobs():
             function_name = str(event.func)
-            events.append(str('ID: ' + event.id + ', Name: ' + event.__str__() + ' ' + function_name + ' ' + str(event.kwargs)))
+            fc = 'Mail'
+            if 'WhatsApp' in function_name:
+                fc = 'WhatsApp'
+            if 'Slack' in function_name:
+                fc = 'Slack'
+            events.append(str('ID: ' + event.id + ', Name: ' + event.__str__() + ' ' + fc + ' ' + str(event.kwargs)))
         # print(events)
         return events
 

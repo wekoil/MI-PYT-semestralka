@@ -5,9 +5,10 @@ import configparser
 import click
 
 @click.command()
+@click.option('-u', '--url', 'url', required=False, default='http://127.0.0.1:5000', help='Where is your service running.')
 @click.argument('calendar_file', nargs=1, required=True)
 
-def run(calendar_file):
+def run(url, calendar_file):
 
     try:
         CREDENTIALS_FILE = os.environ['CREDENTIALS_FILE']
@@ -26,7 +27,7 @@ def run(calendar_file):
 
     mac = hmac.new(bytes(secret, encoding='ascii'), msg=bytes(JSON, encoding='ascii'), digestmod='sha1').hexdigest()
 
-    p = requests.request(method = 'post', url='http://127.0.0.1:5000/load', json=json.loads(JSON), headers={"Signature": "sha1={}".format(mac)})
+    p = requests.request(method = 'post', url=str(url + '/load'), json=json.loads(JSON), headers={"Signature": "sha1={}".format(mac)})
 
     print(p)
 
