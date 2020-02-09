@@ -15,3 +15,18 @@ API
    :members:
    :undoc-members:
    :show-inheritance:
+
+.. automodule:: add
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: remove
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: load
+   :members:
+   :undoc-members:
+   :show-inheritance:

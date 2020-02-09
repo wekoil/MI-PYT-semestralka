@@ -41,23 +41,3 @@ def test_remove(testapp):
     JSON = '{"id": "0"}'
     rv = ap.post('/remove', json=json.loads(JSON), headers={'Signature': 'sha1=a8bdd44c0eb374da291f9c5d2be444ace8d5b3b5'})
     assert rv.status_code == 200  
-
-
-# def test_add_event(capsys):
-# 	try:
-# 		CREDENTIALS_FILE = os.environ['CREDENTIALS_FILE']
-# 	except:
-# 		CREDENTIALS_FILE = 'credentials.cfg'
-
-# 	config = configparser.ConfigParser()
-# 	with open(CREDENTIALS_FILE) as f:
-# 		config.read_file(f)
-
-# 	secret = config['web']['secret']
-
-# 	sch = run_scheduler()
-# 	JSON = '{"name": "JMENO", "when": "2020-01-30 19:25:00", "how": "mail", "message": "novej event", "subject": "predmet"}'
-
-# 	mac = hmac.new(bytes(secret, encoding='ascii'), msg=bytes(JSON, encoding='ascii'), digestmod='sha1').hexdigest()
-
-# 	p = requests.request(method = 'post', url='http://127.0.0.1:5000/add', json=json.loads(JSON), headers={"Signature": "sha1={}".format(mac)})
