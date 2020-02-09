@@ -1,4 +1,4 @@
-from scheduler import Scheduler
+from src.scheduler import Scheduler
 import pytest
 
 def test_create_event_with_wrong_date(capsys):

@@ -1,4 +1,4 @@
-from message import Mail, Slack, WhatsApp, Message
+from src.message import Mail, Slack, WhatsApp, Message
 import pytest
 
 def test_mail(capsys):

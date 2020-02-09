@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, abort
 import flask
-from scheduler import Scheduler
+from src.scheduler import Scheduler
 import hmac
 import configparser
 import os

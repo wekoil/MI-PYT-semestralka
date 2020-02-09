@@ -4,7 +4,7 @@ import os
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from message import Mail, Slack, WhatsApp
+from src.message import Mail, Slack, WhatsApp
 
 from ics import Calendar, Event
 

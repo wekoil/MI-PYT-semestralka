@@ -1,0 +1,4 @@
+include LICENSE
+include src/templates/*
+include docs/*
+include tests/*

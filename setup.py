@@ -1,0 +1,32 @@
+from setuptools import setup
+
+setup(
+    setup_requires=['pytest-runner', ],
+    tests_require=['pytest', 'flexmock'],
+    name='event_manager_michaj24',
+    version='0.1',
+    description='Event manager',
+    author='Jan Michal',
+    author_email='michaj24@fit.cvut.cz',
+    keywords='github,event,scheduler,reminder',
+    license='MIT',
+    url='https://github.com/wekoil/MI-PYT-semestralka',
+    packages=['src', 'tests', 'docs'],
+    package_data={'src': ['src/templates/*']},
+    include_package_data=True,
+    classifiers=[
+        'Intended Audience :: Developers',
+        'Intended Audience :: Education',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.7',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Framework :: Flask',
+        'Environment :: Console',
+        'Environment :: Web Environment',
+        ],
+    zip_safe=False,
+    install_requires=['requests', 'click>=6', 'Flask', 'configparser', 'ics', 'apscheduler', 'twilio', 'slackclient'],
+)

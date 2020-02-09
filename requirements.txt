@@ -5,3 +5,6 @@ twilio
 requests
 click
 flexmock
+pytest
+sphinx
+slackclient

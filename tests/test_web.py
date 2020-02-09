@@ -1,5 +1,5 @@
 import pytest
-from web import *
+from src.web import *
 import flexmock
 import requests
 
