@@ -10,6 +10,9 @@ Welcome to Event Manager's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   api
+   config
+   credentials
    message
    scheduler
    usage
