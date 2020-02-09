@@ -4,6 +4,10 @@ import json
 import configparser
 import click
 
+"""This file is used to load calendar into your scheduler.
+
+Specify your calendar file relatively with root of module."""
+
 @click.command()
 @click.option('-u', '--url', 'url', required=False, default='http://127.0.0.1:5000', help='Where is your service running.')
 @click.argument('calendar_file', nargs=1, required=True)

@@ -4,6 +4,8 @@ import json
 import configparser
 import click
 
+"""This file is used to remove event from your scheduler with selected ID"""
+
 @click.command()
 @click.option('-u', '--url', 'url', required=False, default='http://127.0.0.1:5000', help='Where is your service running.')
 

@@ -5,6 +5,8 @@ import configparser
 import click
 import datetime
 
+"""This file is used to add event to your scheduler"""
+
 def validate_date(ctx, param, value):
     try:
         datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
